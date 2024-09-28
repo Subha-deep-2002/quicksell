@@ -1,85 +1,56 @@
 import React from "react";
+import './Card.css';
 
-// function Card({ ticket, users, groupingOption }) {
-//   let available = false;
+function Card({ ticket, userImage, getStatusImgPath, groupingOption }) {
+  const getPriorityIconPath = (priority) => {
+    switch (priority) {
+      case 0:
+        return '/Untitled/icons_FEtask/No-priority.svg'; 
+      case 1:
+        return 'Untitled/icons_FEtask/Img - Low Priority.svg'; 
+      case 2:
+        return 'Untitled/icons_FEtask/Img - Medium Priority.svg'; 
+      case 3:
+        return 'Untitled/icons_FEtask/Img - High Priority.svg'; 
+      case 4:
+        return 'Untitled/icons_FEtask/SVG - Urgent Priority colour.svg'; 
+      default:
+        return 'Untitled/icons_FEtask/SVG - Urgent Priority grey.svg';
+    }
+  };
 
-//   const getImagePath = (userID) => {
-//     const user = users.find((user) => {
-//       return user.id === userID;
-//     });
-//     console.log(user);
-//     available = user.available;
-
-//     return `./images/users/${userID}.jpg`;
-//   };
-
-//   return (
-//     <div className="card mb-3 shadow p-3 mb-5 bg-white rounded">
-//       <div className="card-body">
-//         <div className="d-flex justify-content-between align-items-centre mb-2">
-//           <div className="id align-self-center">
-//             <span>{ticket.id}</span>
-//           </div>
-//           {groupingOption !== "user" && (
-//             <div className="img-section">
-//               <div className="user-img">
-//                 <img
-//                   src={getImagePath(ticket.userId)}
-//                   alt=""
-//                   width="36px"
-//                   className="rounded-circle"
-//                 />
-//               </div>
-//               {available ? (
-//                 <div className="available-status">
-//                   <i className="fa fa-circle text-success" aria-hidden="true"></i>
-//                 </div>
-//               ) : (
-//                 <div className="available-status">
-//                   <i className="fa fa-circle text-secondary" aria-hidden="true"></i>
-//                 </div>
-//               )}
-//             </div>
-//           )}
-//         </div>
-//         <div className="title-section">
-//           <h6>{ticket.title}</h6>
-//         </div>
-//         <div className="feature-request d-flex align-items-center p-1">
-//           <i className="fa fa-circle pe-2 text-secondary" aria-hidden="true"></i>
-//           <p className="align-self-center m-0">{ticket.tag}</p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-function Card({ ticket }) {
   return (
-    <div className="card mb-2 p-2 shadow-sm bg-white rounded">
+    <div className="custom-card">
       <div className="card-body">
-        {/* Ticket ID Section */}
-        <div className="d-flex justify-content-start align-items-center mb-1">
-          <div className="id align-self-center">
-            <small className="text-muted">{ticket.id}</small>
-          </div>
-        </div>
-        
-        {/* Title Section */}
-        <div className="title-section">
-          <h6 className="m-0">{ticket.title}</h6>
+        <div className="id-section">
+          <small>{ticket.id}</small>
+          <img src={userImage} alt="User" className="tag-icon" /> 
         </div>
 
-        {/* Feature Request Tag */}
-        <div className="feature-request d-flex align-items-center mt-2">
-          <i className="fa fa-circle text-secondary me-2" aria-hidden="true"></i>
-          <p className="m-0">{ticket.tag}</p>
-        </div>
+        <div className="title-status-priority-section">
+          {(groupingOption === "user" || groupingOption === "priority")&& (
+            <img
+              src={getStatusImgPath(ticket.status)}
+              alt="Status"
+              className="status-icon"
+              style={{ marginRight: '8px' }}
+            />
+          )}
+          <h6 style={{ margin: '0 8px' }}>{ticket.title}</h6>
+          </div>
+          <div className="tag-section" >
+            <img
+              src={getPriorityIconPath(ticket.priority)}
+              alt="Priority"
+              className="priority-icon"
+            />
+            <span className="tag-circle"></span>
+            <p style={{ margin: '0' }}>{ticket.tag[0]}</p>
+          </div>
+        
       </div>
     </div>
   );
 }
 
 export default Card;
-
-// export default Card;

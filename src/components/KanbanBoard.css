@@ -1,0 +1,164 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+  }
+  
+  .kanban-board {
+    padding: 20px;
+    margin-top: 50px;
+  }
+  
+  .navbar {
+    background-color: #ffffff;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%; 
+    position: fixed;
+    top: 0; 
+    left: 0;
+    z-index: 1000;
+  }
+  
+  .navbar-content {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .dropdown {
+    position: relative;
+  }
+  
+  .dropdown-toggle {
+    background-color: transparent;
+    border: 1px solid #dee2e6; 
+    border-radius: 4px; 
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; 
+    align-items: center; 
+    padding: 5px 10px; 
+    transition: background-color 0.2s; 
+}
+.arrow-icon {
+    margin-left: 4px;         
+    width: 20px;
+  }
+.dropdown-toggle:hover {
+    background-color: #e9ecef; 
+}
+
+.dropdown-toggle img {
+    margin-right: 5px; 
+}
+
+
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    display: none; 
+  }
+  
+  .dropdown:hover .dropdown-menu {
+    display: block; 
+  }
+  
+  .dropdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+  }
+  
+  .form-select {
+    margin-left: 10px;
+  }
+  
+  .groups {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .group {
+    padding: 10px;
+    margin: 0 10px;
+    flex: 1; 
+    min-width: 320px; 
+  }
+  
+  .group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .group-title {
+    display: flex;
+    align-items: center;
+  }
+  
+  .group-status,
+  .group-user,
+  .group-priority {
+    display: flex;
+    align-items: center;
+  }
+  
+  .group-title h4 {
+    margin: 0;
+    margin-left: 8px;
+  }
+  
+  .ticket-count {
+    margin-left: auto;
+    padding-left: 10px;
+    color: #6c757d;
+  }
+  
+  .available-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-left: 5px;
+  }
+  
+  .available {
+    background-color: green;
+  }
+  
+  .not-available {
+    background-color: gray;
+  }
+  
+  .cards {
+    margin-top: 10px;
+  }
+  
+  .user-img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  
+  img {
+    display: block;
+  }
+  
+  .header-options img {
+    margin-left: 5px;
+    cursor: pointer;
+  }
+  .header-options {
+    display: flex;          
+    align-items: center;   
+    gap: 8px;              
+  }

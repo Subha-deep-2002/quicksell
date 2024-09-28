@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchData } from "../api/api";
 import Card from "./Card";
+import './KanbanBoard.css';
 
 function KanbanBoard() {
   const [tickets, setTickets] = useState([]);
@@ -19,12 +20,9 @@ function KanbanBoard() {
   }, []);
 
   const groupAndSortTickets = (tickets, groupingOption, sortingOption) => {
-    
-    // Saving state on referesh
-    localStorage.setItem("groupingOption", groupingOption );
-    localStorage.setItem("sortingOption", sortingOption );
+    localStorage.setItem("groupingOption", groupingOption);
+    localStorage.setItem("sortingOption", sortingOption);
 
-    // Grouping logic
     const groupedTickets = {};
     tickets.forEach((ticket) => {
       const groupKey =
@@ -32,11 +30,8 @@ function KanbanBoard() {
           ? ticket.status
           : groupingOption === "user"
           ? (ticket.userId
-              ? users.find((user) => {
-                  return user.id === ticket.userId;
-                })
-              : ""
-            ).name
+              ? users.find((user) => user.id === ticket.userId).name
+              : "")
           : groupingOption === "priority"
           ? ticket.priority
           : "Other";
@@ -47,7 +42,6 @@ function KanbanBoard() {
       groupedTickets[groupKey].push(ticket);
     });
 
-    // Sorting logic
     Object.keys(groupedTickets).forEach((groupKey) => {
       groupedTickets[groupKey].sort((a, b) => {
         if (sortingOption === "priority") {
@@ -62,164 +56,130 @@ function KanbanBoard() {
     return groupedTickets;
   };
 
-  const groupedAndSortedTickets = groupAndSortTickets(
-    tickets,
-    groupingOption,
-    sortingOption
-  );
+  const groupedAndSortedTickets = groupAndSortTickets(tickets, groupingOption, sortingOption);
 
-  // const getStatusImgPath = (status) => {
-  //   status = status.toLowerCase().replace(/\s+/g, '-')
-  //   return `./images/logos/status/${status}.png`;
-  // }
   const getStatusImgPath = (status) => {
-    console.log(status);
     switch (status) {
-      
       case "Todo":
-        
         return "Untitled/icons_FEtask/To-do.svg";
       case "In progress":
         return "Untitled/icons_FEtask/in-progress.svg";
       case "Backlog":
         return "Untitled/icons_FEtask/Backlog.svg";
+      case "Done":
+        return "Untitled/icons_FEtask/Done.svg"; 
+      case "Cancelled":
+        return "Untitled/icons_FEtask/Cancelled.svg"; 
       default:
-        return "/icons/status/default.svg"; // fallback image
+        return "/icons/status/default.svg"; 
     }
   };
-  
+  const getPriorityImgPath = (priority) => {
+    switch (priority) {
+      case 0:
+        return '/Untitled/icons_FEtask/No-priority.svg';
+      case 1:
+        return 'Untitled/icons_FEtask/Img - Low Priority.svg'; 
+      case 2:
+        return 'Untitled/icons_FEtask/Img - Medium Priority.svg';
+      case 3:
+        return 'Untitled/icons_FEtask/Img - High Priority.svg';
+      case 4:
+        return 'Untitled/icons_FEtask/SVG - Urgent Priority colour.svg';
+      default:
+        return 'Untitled/icons_FEtask/SVG - Urgent Priority grey.svg';
+    }
+  };
 
   const getImagePath = (userName) => {
-    const user = users.find((user) => {
-      return user.name === userName;
-    })
-    console.log(user);
-    available = user.available;
-    
-    return `./images/users/${user.id}.jpg`
-  }
+    const user = users.find((user) => user.name === userName);
+    available = user?.available;
 
-  const getPriorityImgPath = (priority) => {
-    return `./images/logos/priorities/${priority}.png`;
-  }
+    return `./images/users/${user?.id}.jpg`;
+  };
+
 
   return (
     <div className="kanban-board">
-
-      {/* NAVBAR SECTION  */}
-      <nav className="navbar navbar-expand-lg bg-light mb-3">
-        <div className="container-fluid">
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item dropdown">
-                <span
-                  className="dropdown-toggle btn btn-light"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
+      {/* NAVBAR SECTION */}
+      <nav className="navbar">
+        <div className="navbar-content">
+          <div className="dropdown">
+            <button className="dropdown-toggle">
+              <img src="Untitled/icons_FEtask/Display.svg" alt="Sliders" className="me-1" width="20px" />
+              Display
+              <img src="Untitled/icons_FEtask/down.svg" alt="Arrow" className="arrow-icon" width="12px" />
+            </button>
+            <div className="dropdown-menu">
+              <div className="dropdown-item">
+                <span>Grouping</span>
+                <select
+                  value={groupingOption}
+                  onChange={(e) => setGroupingOption(e.target.value)}
+                  className="form-select"
                 >
-                  {/* <i className="fa fa-sliders pe-1"></i> */}
-                  <img src="Untitled\icons_FEtask\Display.svg" alt="Sliders" className="me-1" width="20px" />
-                  Display
-                </span>
-                <ul className="dropdown-menu w-200">
-                  <li>
-                    <div className="d-flex justify-content-between">
-                      <p className="dropdown-item align-self-center" href="#">
-                        Grouping
-                      </p>
-                      <select
-                        value={groupingOption}
-                        onChange={(e) => setGroupingOption(e.target.value)}
-                        className="form-select m-2"
-                      >
-                        <option value="status">Status</option>
-                        <option value="user">User</option>
-                        <option value="priority">Priority</option>
-                      </select>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="d-flex justify-content-between">
-                      <p className="dropdown-item align-self-center" href="#">
-                        Ordering
-                      </p>
-                      <select
-                        value={sortingOption}
-                        onChange={(e) => setSortingOption(e.target.value)}
-                        className="form-select m-2"
-                      >
-                        <option value="priority">Priority</option>
-                        <option value="title">Title</option>
-                      </select>
-                    </div>
-                  </li>
-                </ul>
-              </li>
-            </ul>
+                  <option value="status">Status</option>
+                  <option value="user">User</option>
+                  <option value="priority">Priority</option>
+                </select>
+              </div>
+              <div className="dropdown-item">
+                <span>Ordering</span>
+                <select
+                  value={sortingOption}
+                  onChange={(e) => setSortingOption(e.target.value)}
+                  className="form-select"
+                >
+                  <option value="priority">Priority</option>
+                  <option value="title">Title</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* MAIN SECTION */}
-      <div className="d-flex justify-content-evenly">
+      <div className="groups">
         {groupedAndSortedTickets &&
           Object.keys(groupedAndSortedTickets).map((group) => (
-            <div key={group} className="group col-md-2">
+            <div key={group} className="group">
               {/* GROUP HEADER SECTION*/}
-              <div className="group-header mb-3 d-flex justify-content-between">
-                <div className="group-title d-flex">
-                  { groupingOption === "status" && (
-                    <div className="d-flex ps-1">
-                      <img src={getStatusImgPath(group)} alt="" className="me-2" width="36px"/>
-                      {/* <img src="Untitled\icons_FEtask\To-do.svg" alt="" className="me-2" width="36px"/> */}
+              <div className="group-header">
+                <div className="group-title">
+                  {groupingOption === "status" && (
+                    <div className="group-status">
+                      <img src={getStatusImgPath(group)} alt="" width="16px" />
                       <h4>{group}</h4>
                     </div>
-                  ) }
-                  { groupingOption === "user" && (
-                    <div className="d-flex ps-1">
-                      <div className="img-section me-2">
-                        <div className="user-img">
-                          <img src={getImagePath(group)} alt="" width="36px" className='rounded-circle'/>
-                        </div>
-                        { available ? 
-                        <div className="available-status">
-                          {/* <img src={img} alt="" /> */}
-                          <i className="fa fa-circle text-success" aria-hidden="true"></i>
-                        </div> 
-                        : 
-                        <div className="available-status">
-                            {/* <img src={img} alt="" /> */}
-                            <i className="fa fa-circle text-secondary" aria-hidden="true"></i>
-                        </div>}
+                  )}
+                  {groupingOption === "user" && (
+                    <div className="group-user">
+                      <div className="img-section">
+                        <img src={getImagePath(group)} alt="" width="36px" className="user-img" />
+                        <div className={`available-status ${available ? 'available' : 'not-available'}`}></div>
                       </div>
                       <h4>{group}</h4>
                     </div>
-                  ) }
-                  { groupingOption === "priority" && (
-                    <div className="d-flex ps-1">
-  <img src={getStatusImgPath(group)} alt={group} className="me-2" width="36px" />
-  <h4>{priority[group]}</h4>
+                  )}
+                  {groupingOption === "priority" && (
+                    <div className="group-priority">
+                      <img src={getPriorityImgPath(Number(group))} alt={priority[Number(group)]} width="16px" />
+                      <h4>{priority[Number(group)]}</h4>
                     </div>
-                  ) }
-                  <span className="ps-3 pb-1 align-self-center text-muted">{groupedAndSortedTickets[group].length}</span>
+                  )}
+                  <span className="ticket-count">{groupedAndSortedTickets[group].length}</span>
                 </div>
-                <div className="header-options me-1">
-                  {/* <i className="fa fa-plus pe-3 text-secondary align-self-center"></i> */}
-                  {/* <i className="fa fa-list pe-2 text-secondary align-self-center"></i> */}
-                  <img src="Untitled\icons_FEtask\add.svg" alt=""  width="16px"/>
-                  <img src="Untitled\icons_FEtask\3 dot menu.svg" alt=""  width="16px"/>
+                <div className="header-options">
+                  <img src="Untitled/icons_FEtask/add.svg" alt="Add" width="16px" />
+                  <img src="Untitled/icons_FEtask/3 dot menu.svg" alt="Options" width="16px" />
                 </div>
               </div>
               {/* CARDS SECTION */}
               <div className="cards">
                 {groupedAndSortedTickets[group].map((ticket) => (
-                  <Card
-                    key={ticket.id}
-                    ticket={ticket}
-                    users={users}
-                    groupingOption={groupingOption}
-                  />
+                  <Card key={ticket.id} ticket={ticket} users={users} groupingOption={groupingOption} userImage={getImagePath(users.find(user => user.id === ticket.userId)?.name)}
+                  getStatusImgPath={getStatusImgPath} />
                 ))}
               </div>
             </div>
