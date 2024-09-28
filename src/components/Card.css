@@ -5,8 +5,14 @@
   background-color: #fff;
   margin-bottom: 15px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  transform: scale(1);
 }
-
+.custom-card:hover {
+  box-shadow: 0px 5px 15px rgba(0, 123, 255, 0.3); /* Highlight effect on hover */
+  border-color: #007bff; /* Change border color on hover */
+  transform: scale(1.05);
+}
 .card-body {
   padding: 10px;
 }
