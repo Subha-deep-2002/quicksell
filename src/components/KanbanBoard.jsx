@@ -20,60 +20,81 @@ function KanbanBoard() {
   }, []);
 
   const groupAndSortTickets = (tickets, groupingOption, sortingOption) => {
-    localStorage.setItem("groupingOption", groupingOption);
-    localStorage.setItem("sortingOption", sortingOption);
+  localStorage.setItem("groupingOption", groupingOption);
+  localStorage.setItem("sortingOption", sortingOption);
 
-    const groupedTickets = {};
-    tickets.forEach((ticket) => {
-      const groupKey =
-        groupingOption === "status"
-          ? ticket.status
-          : groupingOption === "user"
-          ? (ticket.userId
-              ? users.find((user) => user.id === ticket.userId).name
-              : "")
-          : groupingOption === "priority"
-          ? ticket.priority
-          : "Other";
+  const groupedTickets = {};
 
-      if (!groupedTickets[groupKey]) {
-        groupedTickets[groupKey] = [];
+  tickets.forEach((ticket) => {
+    const groupKey =
+      groupingOption === "status"
+        ? ticket.status
+        : groupingOption === "user"
+        ? (ticket.userId
+            ? users.find((user) => user.id === ticket.userId).name
+            : "")
+        : groupingOption === "priority"
+        ? ticket.priority
+        : "Other";
+
+    if (!groupedTickets[groupKey]) {
+      groupedTickets[groupKey] = [];
+    }
+    groupedTickets[groupKey].push(ticket);
+  });
+
+  if (groupingOption === "status") {
+    if (!groupedTickets["Cancelled"]) {
+      groupedTickets["Cancelled"] = [];
+    }
+    if (!groupedTickets["Backlog"]) {
+      groupedTickets["Backlog"] = [];
+    }
+    if (!groupedTickets["Todo"]) {
+      groupedTickets["Todo"] = [];
+    }
+    if (!groupedTickets["In progress"]) {
+      groupedTickets["In Progress"] = [];
+    }
+    if (!groupedTickets["Done"]) {
+      groupedTickets["Done"] = [];
+    }
+  }
+
+  Object.keys(groupedTickets).forEach((groupKey) => {
+    groupedTickets[groupKey].sort((a, b) => {
+      if (sortingOption === "priority") {
+        return b.priority - a.priority;
+      } else if (sortingOption === "title") {
+        return a.title.localeCompare(b.title);
       }
-      groupedTickets[groupKey].push(ticket);
+      return 0;
     });
+  });
 
-    Object.keys(groupedTickets).forEach((groupKey) => {
-      groupedTickets[groupKey].sort((a, b) => {
-        if (sortingOption === "priority") {
-          return b.priority - a.priority;
-        } else if (sortingOption === "title") {
-          return a.title.localeCompare(b.title);
-        }
-        return 0;
-      });
-    });
+  return groupedTickets;
+};
 
-    return groupedTickets;
-  };
-
+  
   const groupedAndSortedTickets = groupAndSortTickets(tickets, groupingOption, sortingOption);
 
   const getStatusImgPath = (status) => {
-    switch (status) {
-      case "Todo":
+    switch (status.toLowerCase()) {
+      case "todo":
         return "Untitled/icons_FEtask/To-do.svg";
-      case "In progress":
+      case "in progress":
         return "Untitled/icons_FEtask/in-progress.svg";
-      case "Backlog":
+      case "backlog":
         return "Untitled/icons_FEtask/Backlog.svg";
-      case "Done":
+      case "done":
         return "Untitled/icons_FEtask/Done.svg"; 
-      case "Cancelled":
+      case "cancelled":
         return "Untitled/icons_FEtask/Cancelled.svg"; 
       default:
         return "/icons/status/default.svg"; 
     }
   };
+
   const getPriorityImgPath = (priority) => {
     switch (priority) {
       case 0:
@@ -98,6 +119,15 @@ function KanbanBoard() {
     return `./images/users/${user?.id}.jpg`;
   };
 
+  const getOrderedGroupKeys = (groupedTickets) => {
+    const groupKeys = Object.keys(groupedTickets);
+    const filteredKeys = groupKeys.filter((key) => key !== "Cancelled");
+    if (groupingOption === "status") {
+      return [...filteredKeys,"Cancelled"];
+
+    }
+    return [...filteredKeys];
+  };
 
   return (
     <div className="kanban-board">
@@ -142,7 +172,7 @@ function KanbanBoard() {
       {/* MAIN SECTION */}
       <div className="groups">
         {groupedAndSortedTickets &&
-          Object.keys(groupedAndSortedTickets).map((group) => (
+          getOrderedGroupKeys(groupedAndSortedTickets).map((group) => (
             <div key={group} className="group">
               {/* GROUP HEADER SECTION*/}
               <div className="group-header">
@@ -168,18 +198,26 @@ function KanbanBoard() {
                       <h4>{priority[Number(group)]}</h4>
                     </div>
                   )}
-                  <span className="ticket-count">{groupedAndSortedTickets[group].length}</span>
-                </div>
-                <div className="header-options">
-                  <img src="Untitled/icons_FEtask/add.svg" alt="Add" width="16px" />
-                  <img src="Untitled/icons_FEtask/3 dot menu.svg" alt="Options" width="16px" />
-                </div>
+<span className="ticket-count">{groupedAndSortedTickets[group]?.length || 0}</span>
+</div>
+                {group !== "Cancelled" && (
+    <div className="header-options">
+      <img src="Untitled/icons_FEtask/add.svg" alt="Add" width="16px" />
+      <img src="Untitled/icons_FEtask/3 dot menu.svg" alt="Options" width="16px" />
+    </div>
+  )}
               </div>
               {/* CARDS SECTION */}
               <div className="cards">
-                {groupedAndSortedTickets[group].map((ticket) => (
-                  <Card key={ticket.id} ticket={ticket} users={users} groupingOption={groupingOption} userImage={getImagePath(users.find(user => user.id === ticket.userId)?.name)}
-                  getStatusImgPath={getStatusImgPath} />
+                {groupedAndSortedTickets[group]?.map((ticket) => (
+                  <Card
+                    key={ticket.id}
+                    ticket={ticket}
+                    users={users}
+                    groupingOption={groupingOption}
+                    userImage={getImagePath(users.find(user => user.id === ticket.userId)?.name)}
+                    getStatusImgPath={getStatusImgPath}
+                  />
                 ))}
               </div>
             </div>
